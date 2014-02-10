@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="../lib/d3.v3.js"></script>
+<script type="text/javascript" src="d3charts.src.js"></script>
+<script>
+function draw() {
+    var opts = {
+        chart : {
+            // width:,
+            // height:,
+            fill : 'yellow',
+            fillOpacity : 1,
+
+            colorPalette : [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd,
+                0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf],
+            title : {
+                enabled : false
+            },
+            legend : {
+                enabled : false
+            },
+            plot : {
+                layout : {
+                    type : 'mixed', // It contains two types, mixed/grid, default is mixed.
+                    rows : 0, // row number for grid layout, the height of each row will get same size to fit total height of plot.
+                    columns : 0 // column number for grid layout, the width of each column will get same size to fit total width of plot.
+                },
+                // fill:'',
+                fillOpacity : 0,
+                border : {},
+                series : [{
+                        type : 'thermometer',
+                        orient : 'vertical',
+                        axisIndex : 0,
+                        fill : 'rgb(150,150,150)',
+                        fillOpacity : 1,
+						ballSize : '50%',
+						tubeSize : '30%',
+                        data : [{
+                                value : 22,
+                                fill : 'red',
+                                fillOpacity : 1
+                            }
+                        ],
+                        ranges : [{
+                                enabled : true,
+                                x1 : 0,
+                                x2 : 10,
+                                fill : 'rgb(0, 255, 255)',
+                                fillOpacity : 1
+                            }, {
+                                enabled : true,
+                                x1 : 10,
+                                x2 : 25,
+                                fill : 'rgb(0, 255, 128)',
+                                fillOpacity : 1
+                            }, {
+                                enabled : true,
+                                x1 : 25,
+								x2 : 40,
+                                fill : 'rgb(0, 128, 255)',
+                                fillOpacity : 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            yAxis : [{
+                    enabled : true,
+                    orient : 'right',
+					reverse : false,
+                    xOffset : 3, // The x offset relative to origin x of axis container, default is 0
+                    yOffset : 10, // The y offset relative to origin y of axis container, default is 0
+                    //fill : 'pink', // Default is undefined.
+                    //fillOpacity : 0.5,
+                    title : { // Inherit from label options and add following additional options.
+                        position : '', // left/middle/right/top/bottom
+
+                    },
+                    label : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        font : {},
+                        //        anchor: 'middle', // start/middle/end
+                        rotation : 0,
+                        rotationAnchor : 'middle',
+                        position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : false,
+                        stroke : 'red',
+                        strokeOpacity : 1,
+                        strokeWidth : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 3,
+                        scale : {
+                            //          stepNumber:0,
+                            //          stepInterval:0,
+                                      min:0,
+                                      max:45
+                            //          autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        outerTickSize : 6,
+                        showStartTickLabel : true,
+                        showEndTickLabel : true,
+                        major : {
+                            enabled : true,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'below', // cross/above/below
+                            size : 10,
+                            lineStepNumber : 1
+                        },
+                        minor : {
+                            enabled : true,
+                            count : 3,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'below', // cross/above/below
+                            size : 6
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    var svg = d3.select('body').append('div').attr({
+            width : '100px',
+            height : '300px'
+        });
+    var context = new d3charts. ChartContext();
+    var chart = new d3charts.Chart(context, opts).fRender(svg);
+	
+    var series = chart.fSeries('thermometer');
+	//series[0].options.data[0].value = 100;
+	//series[0].options.targets[0].value = 80;
+	//series[0].fRedraw();
+}	
+
+</script>
+<body onload="draw();">
+</body>
+</html>
+

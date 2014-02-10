@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="d3.v3.js"></script>
+<script type="text/javascript" src="d3charts.src.js"></script>
+<script>
+function draw() {
+    var opts = {
+        chart : {
+            // width:,
+            // height:,
+            fill : 'yellow',
+            fillOpacity : 1,
+
+            colorPalette : [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd,
+                0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf],
+            title : {
+                enabled : false
+            },
+            legend : {
+                enabled : false
+            },
+            plot : {
+                layout : {
+                    type : 'mixed', // It contains two types, mixed/grid, default is mixed.
+                    rows : 0, // row number for grid layout, the height of each row will get same size to fit total height of plot.
+                    columns : 0 // column number for grid layout, the width of each column will get same size to fit total width of plot.
+                },
+                // fill:'',
+                fillOpacity : 0,
+                border : {},
+                series : [{
+                        type : 'bullet',
+                        orient : 'horizontal',
+                        axisIndex : 0,
+                        fill : {
+                            type : 'linearGradient',
+                            parameters : 'T,B',
+                            stops : [{
+                                    offset : '0%',
+                                    stopColor : 'blue',
+                                    stopOpacity : 1
+                                }, {
+                                    offset : '30%',
+                                    stopColor : 'white',
+                                    stopOpacity : 1
+                                }, {
+                                    offset : '100%',
+                                    stopColor : 'blue',
+                                    stopOpacity : 1
+                                }
+                            ]
+                        },
+                        fillOpacity : 1,
+						title : {
+							enabled:true,
+							text: 'title',
+							font: {
+								fill: 'red',
+								fontSize:'20'
+							}
+						},
+						subtitle: {
+							enabled:true,
+							text: 'subtitle'
+						},
+                        data : [{
+                                value : 150,
+                                //size: 20,
+                                fill : 'green',
+                                fillOpacity : 0.5
+                            },
+							{
+                                value : 120,
+                                //size: 20,
+                                fill : 'green',
+                                fillOpacity : 0.5
+                            }
+                        ],
+                        targets : [{
+                                value : 160,
+                                //size: 30,
+                                //width: 10,
+                                //fill: 'red'
+                                //fillOpacity: 1
+                            }
+                        ],
+                        ranges : [{
+                                enabled : true,
+                                type : 'range', // line or range
+                                x1 : 0,
+                                x2 : 100,
+                                fill : 'rgb(0, 255, 255)',
+                                fillOpacity : 1
+                            }, {
+                                enabled : true,
+                                type : 'range', // line or range
+                                x1 : 100,
+                                x2 : 200,
+                                fill : 'rgb(0, 255, 128)',
+                                fillOpacity : 1
+                            }, {
+                                enabled : true,
+                                type : 'range', // line or range
+                                x1 : 200,
+                                fill : 'rgb(0, 128, 255)',
+                                fillOpacity : 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            yAxis : [{
+                    enabled : true,
+                    orient : 'bottom',
+					reverse : false,
+                    xOffset : 0, // The x offset relative to origin x of axis container, default is 0
+                    yOffset : 0, // The y offset relative to origin y of axis container, default is 0
+                    //fill : 'pink', // Default is undefined.
+                    //fillOpacity : 0.5,
+                    title : { // Inherit from label options and add following additional options.
+                        position : '', // left/middle/right/top/bottom
+
+                    },
+                    label : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        font : {},
+                        //        anchor: 'middle', // start/middle/end
+                        rotation : 0,
+                        rotationAnchor : 'middle',
+                        position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : true,
+                        stroke : 'red',
+                        strokeOpacity : 1,
+                        strokeWidth : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 3,
+                        scale : {
+                            //          stepNumber:0,
+                            //          stepInterval:0,
+                            //          min:,
+                            //          max:,
+                            //          autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        outerTickSize : 6,
+                        showStartTickLabel : true,
+                        showEndTickLabel : true,
+                        major : {
+                            enabled : true,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'below', // cross/above/below
+                            size : 10,
+                            lineStepNumber : 1
+                        },
+                        minor : {
+                            enabled : true,
+                            count : 3,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'below', // cross/above/below
+                            size : 6
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    var svg = d3.select('body').append('div').attr({
+            width : '800px',
+            height : '100px'
+        });
+    var context = new d3charts. ChartContext();
+    var chart = new d3charts.Chart(context, opts).fRender(svg);
+	
+    var series = chart.fSeries('bullet');
+	series[0].options.data[0].value = 100;
+	series[0].options.targets[0].value = 80;
+	series[0].fRedraw();
+}	
+
+</script>
+<body onload="draw();">
+</body>
+</html>
+

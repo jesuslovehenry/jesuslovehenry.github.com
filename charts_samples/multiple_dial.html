@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="../lib/d3.v3.js"></script>
+<script type="text/javascript" src="d3charts.src.js"></script>
+<script>
+function draw() {
+    var svg = d3.select('body').append('div').attr({
+            width : '800px',
+            height : '600px'
+        });
+    var opts = {
+        chart : {
+            // width:,
+            // height:,
+            fill : 'yellow',
+            fillOpacity : 1,
+            //            margin : {},
+            border : {},
+
+            colorPalette : [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd,
+                0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf],
+            title : {
+                enabled : false
+            },
+            legend : {
+                enabled : false
+            },
+            plot : {
+                layout : {
+                    type : 'mixed', // It contains two types, mixed/grid, default is mixed.
+                    rows : 0, // row number for grid layout, the height of each row will get same size to fit total height of plot.
+                    columns : 0 // column number for grid layout, the width of each column will get same size to fit total width of plot.
+                },
+                // fill:'',
+                fillOpacity : 0,
+                border : {},
+                series : [{
+                        type : 'dial',
+                        axisIndex : 0,
+                        startAngle : -125, //
+                        endAngle : 0,
+                        fillOpacity : 0,
+                        dialArc : {
+                            radius : '80%', // percent value of min value of container's width and height.
+                            innerRadius : '70%', // Same with radius,
+                            fill : {
+                                type : 'linearGradient',
+                                parameters : 'T,B',
+                                stops : [{
+                                        offset : '0%',
+                                        stopColor : 'yellow'
+                                    }, {
+                                        offset : '100%',
+                                        stopColor : 'black'
+                                    }
+                                ]
+                            },
+                            fillOpacity : 0.7,
+                            border : {
+                                enabled : false,
+                                stroke : 'white',
+                                strokeOpacity : 0,
+                                strokeWidth : 1
+                            }
+                        },
+                        data : [60],
+                        ranges : [{
+                                name : 's1',
+                                startValue : 140,
+                                endValue : 145,
+                                innerRadius : '75%',
+                                radius : '95%',
+                                fill : 'red',
+                                fillOpacity : 1,
+                                border : {}
+                            }, {
+                                name : 's2',
+                                startValue : 148,
+                                endValue : 158,
+                                innerRadius : '75%',
+                                radius : '95%',
+                                fill : 'red',
+                                fillOpacity : 1,
+                                border : {}
+                            }, {
+                                name : 's2',
+                                startValue : 161,
+                                endValue : 175,
+                                innerRadius : '75%',
+                                radius : '95%',
+                                fill : 'red',
+                                fillOpacity : 1,
+                                border : {}
+                            }, {
+                                name : 's2',
+                                startValue : 178,
+                                endValue : 198,
+                                innerRadius : '75%',
+                                radius : '95%',
+                                fill : 'red',
+                                fillOpacity : 1,
+                                border : {}
+                            }
+                        ],
+
+                        indicator : {
+                            fill : 'red',
+                            fillOpacity : 1,
+                            body : {
+                                headRadius : '80%',
+                                headSize : 5,
+                                pivotSize : '12%',
+                                tailRadius : '15%',
+                                tailSize : 5,
+                                fill : 'red',
+                                fillOpacity : 0.8,
+                                border : {
+                                    stroke : 'rgb(255,128,128)',
+                                    strokeWidth : 3
+                                }
+                            },
+
+                            pivotMarker : {
+                                enabled : true,
+                                type : 'circle',
+                                size : '80%', // percent of radius
+                                fill : 'rgb(0,64,128)',
+                                fillOpacity : 1,
+                                border : {
+                                    stroke : 'green',
+                                    strokeWidth : 1,
+                                    strokeOpacity : 1
+                                }
+                            }
+                        }
+                    }, {
+                        type : 'dial',
+                        axisIndex : 1,
+                        startAngle : 1, //
+                        endAngle : 90,
+                        fillOpacity : 0,
+                        dialArc : {
+                            radius : '80%', // percent value of min value of container's width and height.
+                            innerRadius : '70%', // Same with radius,
+                            fill : 'pink',
+                            fillOpacity : 0.7,
+                            border : {
+                                enabled : false,
+                                stroke : 'white',
+                                strokeOpacity : 0,
+                                strokeWidth : 1
+                            }
+                        },
+                        data : [10],
+                        indicator : {
+                            fill : 'rgb(0,128,255)',
+                            fillOpacity : 1,
+                            body : {
+                                headRadius : '80%',
+                                headSize : 5,
+                                pivotSize : '12%',
+                                tailRadius : '15%',
+                                tailSize : 1,
+                                fill : 'rgb(128, 0,128)',
+                                fillOpacity : 1,
+                                border : {
+                                    stroke : 'rgb(255, 200,255)',
+                                    strokeWidth : 2
+                                }
+                            }
+                        }
+                    }, {
+                        type : 'dial',
+						axisIndex: 2,
+                        startAngle : 90, //
+                        endAngle : 150,
+                        fill : {
+                            type : 'radialGradient',
+                            parameters : ['50%', '50%', '50%', '50%', '50%'],
+                            stops : [{
+                                    offset : '50%',
+                                    stopColor : 'black',
+                                    stopOpacity : 1
+                                }, {
+                                    offset : '100%',
+                                    stopColor : 'blue',
+                                    stopOpacity : 1
+                                }
+                            ]
+
+                        },
+                        fillOpacity : 1,
+                        border : {
+                            enabled : true,
+                            stroke : 'blue',
+                            strokeOpacity : 1,
+                            strokeWidth : 5,
+                        },
+                        dialArc : {
+                            radius : '80%', // percent value of min value of container's width and height.
+                            innerRadius : '70%', // Same with radius,
+                            fill : 'rgb(0,255,0)',
+                            fillOpacity : 0.7,
+                            border : {
+                                enabled : true,
+                                stroke : 'white',
+                                strokeOpacity : 0,
+                                strokeWidth : 1
+                            }
+                        },
+                        data : [30],
+                        indicator : {
+                            fill : 'red',
+                            fillOpacity : 1,
+                            body : {
+                                headRadius : '80%',
+                                headSize : 5,
+                                pivotSize : '12%',
+                                tailRadius : '15%',
+                                tailSize : 1,
+                                fill : 'rgb(0,64,64)',
+                                fillOpacity : 1,
+                                border : {
+                                    enabled : true,
+                                    stroke : 'rgb(100,255,255)',
+                                    strokeWidth : 2
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            // category : {},
+            xAxis : {},
+            yAxis : [{
+                    enabled : true,
+                    orient : 'out', // 'in' or 'out'
+                    //      x : ,
+                    //      y : ,
+                    //      fill:,
+                    fillOpacity : 0,
+                    title : {},
+                    label : {
+                        enabled : true,
+                        normalize : false, // Used for dial axis label, true means the label will be rotated rather than horizontal.
+                        fill : 'white',
+                        fillOpacity : 1,
+                        font : {
+							fontSize: 20
+						},
+                        position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        width : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 10,
+                        scale : {
+                            //              stepNumber:0,
+                            //              stepInterval:0,
+                            min : 0,
+                            max : 200
+                            //              autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        major : {
+                            enabled : true,
+                            style : 'below', // cross/above/below
+                            size : '15%',
+                            strokeWidth : 3
+                        },
+                        minor : {
+                            enabled : false,
+                            style : 'below', // cross/above/below
+                            size : '10%',
+                            strokeWidth : 2
+                        }
+                    },
+                    bands : [{
+                            enabled : true,
+                            type : 'line', // line or range
+                            label : {},
+                            marker : {
+                                enabled : false,
+                                type : 'arrow',
+                                size : 5,
+                                border : {},
+                                fill : 'white',
+                                fillOpacity : 0
+                            },
+                            //          startValue: 0,
+                            //          endValue : 0,
+                        }
+                    ]
+                }, {
+                    enabled : true,
+                    orient : 'out', // 'in' or 'out'
+                    //      x : ,
+                    //      y : ,
+                    //      fill:,
+                    fillOpacity : 0,
+                    title : {},
+                    label : {
+                        enabled : true,
+                        normalize : false, // Used for dial axis label, true means the label will be rotated rather than horizontal.
+                        fill : 'black',
+                        fillOpacity : 1,
+                        font : {},
+                        position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        width : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 10,
+                        scale : {
+                            stepNumber : 5,
+                            //              stepInterval:0,
+                            min : 0,
+                            max : 1000
+                            //              autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        major : {
+                            enabled : true,
+                            style : 'below', // cross/above/below
+                            size : '15%',
+                            strokeWidth : 3
+                        },
+                        minor : {
+                            enabled : false,
+                            style : 'below', // cross/above/below
+                            size : '10%',
+                            strokeWidth : 2
+                        }
+                    }
+                }, {
+                    enabled : true,
+                    orient : 'out', // 'in' or 'out'
+                    //      x : ,
+                    //      y : ,
+                    //      fill:,
+                    fillOpacity : 0,
+                    title : {},
+                    label : {
+                        enabled : true,
+                        normalize : false, // Used for dial axis label, true means the label will be rotated rather than horizontal.
+                        fill : 'black',
+                        fillOpacity : 1,
+                        font : {},
+                        position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        width : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 10,
+                        scale : {
+                            stepNumber : 3,
+                            //              stepInterval:0,
+                            min : 0,
+                            max : 60
+                            //              autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        major : {
+                            enabled : true,
+                            style : 'below', // cross/above/below
+                            size : '15%',
+                            strokeWidth : 3
+                        },
+                        minor : {
+                            enabled : false,
+                            style : 'below', // cross/above/below
+                            size : '10%',
+                            strokeWidth : 2
+                        }
+                    }
+                }
+
+            ]
+        }
+    };
+
+    var context = new d3charts.ChartContext();
+    var ll = new d3charts.Chart(context, opts).fRender(svg);
+	
+	
+	
+    var series = ll.fSeries('dial');
+	
+	var labelOpts = {
+		'width' : 180,
+		'digitCount' : 3,
+		'negative' : false,
+		'decimals' : 0,
+		'value' : 0,
+		'gap' : 130,
+		'fill':'yellow',
+		'fillOpacity':0.15
+	};
+	var al = new d3charts.LedLabel(series[0], context, labelOpts).fRender();
+	al.d3Sel.attr('transform', 'translate(' + (series[0].cx - labelOpts.width /2) + ' ' + (series[0].cy - 20 )+ ')');
+	
+	
+	var lbOpts = d3charts.api.clone(labelOpts);
+	lbOpts.width = 100;
+	lbOpts.digitCount = 4;
+	lbOpts.fill = 'pink';
+	var bl = new d3charts.LedLabel(series[0], context, lbOpts).fRender();
+	bl.d3Sel.attr('transform', 'translate(' + (series[0].cx - lbOpts.width /2) + ' ' + (series[0].cy - 80 )+ ')');
+	
+	var v = 10;
+    setInterval(function () {
+		v = Math.floor(Math.random() * 200);
+		al.fValue(v);
+		series[0].fMovePointer(v, 500);
+		
+		v = Math.floor(Math.random() * 1000);
+		bl.fValue(v);
+		series[1].fMovePointer(v, 500);
+		
+		series[2].fMovePointer(Math.floor(Math.random() * 60), 500);
+		
+    }, 200);
+}
+</script>
+<body onload="draw();">
+</body>
+</html>
