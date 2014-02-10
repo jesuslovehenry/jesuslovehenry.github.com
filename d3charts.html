@@ -5,7 +5,7 @@
 <script type="text/javascript" src="javascripts/d3charts.src.js"></script>
 <script>
 var run = function () {
-	var data = [['Dial', 'multiple_dial.html'], ['Linear', 'linear.html'], ['Bullet', 'bullet.html'], ['Thermometer', 'thermometer.html'], ['LED label', 'ledLabel.html']];
+	var data = [['Dial', 'dial.html'], ['Tesla dial', 'multiple_dial.html'], ['Linear', 'linear.html'], ['Bullet', 'bullet.html'], ['Thermometer', 'thermometer.html'], ['LED label', 'ledLabel.html']];
 	var linkUpdate = d3.select('body').append('div').selectAll('.link').data(data);
 	linkUpdate.enter().append('a').each(function(d) {
 		d3.select(this).text(d[0]).attr('href', d[1]).append('br');
