@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="javascripts/d3.v3.js"></script>
+<script type="text/javascript" src="javascripts/d3charts.src.js"></script>
+<script>
+function draw() {
+    var svg = d3.select('body').append('svg:svg').attr({
+            width : 800,
+            height : 600
+        });
+    var labelOpts = {
+		'width' : 180,
+		'digitCount' : 6,
+		'negative' : false,
+		'decimals' : 0,
+		'value' : 34324234,
+		'gap' : 130,
+		'fill':'#ff0000',
+		'fillOpacity':0.15
+	};
+	var context = new d3charts.ChartContext();
+	var container = {d3Sel : svg};
+    var ll = new d3charts.LedLabel(container, context, labelOpts).fRender();
+	
+	var i =0;
+	ll.fValue(i++);
+	setInterval(function(){
+		ll.fValue(i++);
+	}, 100);
+}
+</script>
+<body onload="draw();">
+</body>
+</html>

@@ -1709,13 +1709,13 @@ function d3c_calculateScaleDomain(axisOpts, rangesOpts, values) {
     }
     
     var extent = d3.extent(values), scale = getScale(extent[0]), i = 0;
-    if (axisOpts.scale && axisOpts.scale.min !== undefined) {
-        extent[0] = axisOpts.scale.min;
+    if (axisOpts.tick.scale && axisOpts.tick.scale.min !== undefined) {
+        extent[0] = axisOpts.tick.scale.min;
     } else {
         extent[0] = scale === 0 ? 0 : (scale > 1 ? (extent[0] - extent[0] % scale) - scale : Math.floor((extent[0] - scale) / scale) * scale);
     }
-    if (axisOpts.scale && axisOpts.scale.max !== undefined) {
-        extent[1] = axisOpts.scale.max;
+    if (axisOpts.tick.scale && axisOpts.tick.scale.max !== undefined) {
+        extent[1] = axisOpts.tick.scale.max;
     } else {
         extent[1] = scale === 0 ? 0 : (scale > 1 ? (extent[1] - extent[0] % scale) + scale : Math.floor((extent[0] + scale) / scale) * scale);
     }
@@ -1777,7 +1777,7 @@ function d3c_createMarker(parentUpdate, markerOpts, sizeRef, chartContext, borde
     var
     size = d3c_adaptNumberOpt(markerOpts.size, sizeRef),
     paths = d3c_symbol().type(markerOpts.type).size(size * size),
-    markerUpdate = parentUpdate.selectAll(CN.FN.path).data([markerOpts]);
+    markerUpdate = parentUpdate.selectAll(CN.FN.marker).data([markerOpts]);
     markerUpdate.enter().append('path').attr('class', CN.marker);
     markerUpdate.attr('d', paths());
     d3c_applyBorderStyle(markerUpdate, markerOpts.border, markerOpts, chartContext, borderFunctor);
@@ -2625,7 +2625,7 @@ var Axis = d3c_extendClass(null, Element, {
         hasMinorTicks = false;
         
         this.d3Sel = g;
-        g.transition().each(function(d, i) {
+        g.each(function(d, i) {
             var
             g = d3.select(this).attr('class', _this.fClassNames());
             
@@ -4250,7 +4250,7 @@ var BulletSeries = d3c_extendClass(null, Element, {
         
     },
     fRedraw: function () {
-        this.fRender();
+        this.fRender(this.d3Sel);
     }
 });/**
  * 
@@ -4326,7 +4326,7 @@ var ThermometerSeries = d3c_extendClass(null, Element, {
         p = this._p,
         context = this.chartContext,
         opts = this.options,
-        dataOpts = opts.data,
+        dataOpts = opts.data[0],
         labelOpts = dataOpts.label,
         rangesOpts = opts.ranges,
         axisOpts = opts.axis,
@@ -4372,14 +4372,19 @@ var ThermometerSeries = d3c_extendClass(null, Element, {
 
             // Render label
             if (labelOpts) {
-                labelOpts.anchor = 'middle';
+                var lOpts = d3c_clone(labelOpts);
+                lOpts.text = dataOpts.value;
+                lOpts.anchor = 'middle';
                 var
-                labelUpdate = g.selectAll(CN.FN.label).data([labelOpts]);
+                labelUpdate = g.selectAll(CN.FN.label).data([lOpts]);
                 labelUpdate.enter().append('g').attr('class', CN.label);
-            
-                b.height -= label.bbox().height;
-                label.call(d3c_translate, w / 2, b.y + b.height - label.bbox().height);
+                
+                var label = new Label(_this, context, lOpts);
+                label.fRender(labelUpdate);
+                labelUpdate.call(d3c_translate, w / 2, b.y + b.height - labelUpdate.bbox().height);
+                b.height -= labelUpdate.bbox().height;
             }
+            
             function renderSeries(bounds, duration) {
             
                 // Render thermometer ball and thermometer bar
@@ -4407,7 +4412,7 @@ var ThermometerSeries = d3c_extendClass(null, Element, {
                 axisHeight = tubeHeight - axisOpts.yOffset,
                 range = [axisHeight, 0];
 //                axisUpdate.call(d3c_translate, (w + tubeSize) / 2, bounds.y + bounds.height - ballSize);
-                axisUpdate.call(d3c_translate, (w + tubeSize) / 2 + axisOpts.xOffset, bounds.y + axisOpts.yOffset);
+                axisUpdate.call(d3c_translate, bounds.x + (bounds.width + tubeSize) / 2 + axisOpts.xOffset, bounds.y + axisOpts.yOffset);
                 
                 scale.range(range);
                 
@@ -4444,7 +4449,7 @@ var ThermometerSeries = d3c_extendClass(null, Element, {
                 
                 // Render data
                 var
-                data = dataOpts[0],
+                data = dataOpts,
                 ballFill = d3c_thermometer_fillGradient('ball', data.fill),
                 tubeFill = d3c_thermometer_fillGradient('tube', data.fill),
                 tubeUpdate = g.selectAll(CN.FN.scaleTube).data([0]),

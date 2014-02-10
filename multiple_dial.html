@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
-<script type="text/javascript" src="../lib/d3.v3.js"></script>
-<script type="text/javascript" src="d3charts.src.js"></script>
+<script type="text/javascript" src="javascripts/d3.v3.js"></script>
+<script type="text/javascript" src="javascripts/d3charts.src.js"></script>
 <script>
 function draw() {
     var svg = d3.select('body').append('div').attr({
@@ -38,7 +38,7 @@ function draw() {
                 series : [{
                         type : 'dial',
                         axisIndex : 0,
-                        startAngle : -125, //
+                        startAngle : -140, //
                         endAngle : 0,
                         fillOpacity : 0,
                         dialArc : {
@@ -137,7 +137,7 @@ function draw() {
                     }, {
                         type : 'dial',
                         axisIndex : 1,
-                        startAngle : 1, //
+                        startAngle : 0, //
                         endAngle : 90,
                         fillOpacity : 0,
                         dialArc : {
@@ -174,7 +174,7 @@ function draw() {
                         type : 'dial',
 						axisIndex: 2,
                         startAngle : 90, //
-                        endAngle : 150,
+                        endAngle : 140,
                         fill : {
                             type : 'radialGradient',
                             parameters : ['50%', '50%', '50%', '50%', '50%'],
@@ -260,7 +260,9 @@ function draw() {
                     },
                     tick : {
                         enabled : true,
-                        padding : 10,
+                        padding : 20,
+						//showStartTickLabel: false,
+						showEndTickLabel: false,
                         scale : {
                             //              stepNumber:0,
                             //              stepInterval:0,
@@ -272,14 +274,17 @@ function draw() {
                         major : {
                             enabled : true,
                             style : 'below', // cross/above/below
-                            size : '15%',
-                            strokeWidth : 3
+                            size : '10%',
+                            strokeWidth : 4,
+							stroke: 'white'
                         },
                         minor : {
                             enabled : false,
                             style : 'below', // cross/above/below
-                            size : '10%',
-                            strokeWidth : 2
+                            size : '5%',
+							stroke :'rgb(100,100,100)',
+                            strokeWidth : 3,
+							count: 2
                         }
                     },
                     bands : [{
@@ -311,7 +316,9 @@ function draw() {
                         normalize : false, // Used for dial axis label, true means the label will be rotated rather than horizontal.
                         fill : 'black',
                         fillOpacity : 1,
-                        font : {},
+                        font : {
+							fontSize: 20
+						},
                         position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
                         format : null
                     },
@@ -323,7 +330,9 @@ function draw() {
                     },
                     tick : {
                         enabled : true,
-                        padding : 10,
+						showStartTickLabel: false,
+						showEndTickLabel: false,
+                        padding : 20,
                         scale : {
                             stepNumber : 5,
                             //              stepInterval:0,
@@ -335,14 +344,14 @@ function draw() {
                         major : {
                             enabled : true,
                             style : 'below', // cross/above/below
-                            size : '15%',
-                            strokeWidth : 3
+                            size : '10%',
+                            strokeWidth : 4
                         },
                         minor : {
                             enabled : false,
                             style : 'below', // cross/above/below
-                            size : '10%',
-                            strokeWidth : 2
+                            size : '5%',
+                            strokeWidth : 3
                         }
                     }
                 }, {
@@ -358,7 +367,9 @@ function draw() {
                         normalize : false, // Used for dial axis label, true means the label will be rotated rather than horizontal.
                         fill : 'black',
                         fillOpacity : 1,
-                        font : {},
+                        font : {
+							fontSize : 20
+						},
                         position : 'same', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
                         format : null
                     },
@@ -370,7 +381,9 @@ function draw() {
                     },
                     tick : {
                         enabled : true,
-                        padding : 10,
+                        padding : 20,
+						showStartTickLabel: false,
+						//showEndTickLabel: true,
                         scale : {
                             stepNumber : 3,
                             //              stepInterval:0,
@@ -382,14 +395,14 @@ function draw() {
                         major : {
                             enabled : true,
                             style : 'below', // cross/above/below
-                            size : '15%',
-                            strokeWidth : 3
+                            size : '10%',
+                            strokeWidth : 4
                         },
                         minor : {
                             enabled : false,
                             style : 'below', // cross/above/below
-                            size : '10%',
-                            strokeWidth : 2
+                            size : '5%',
+                            strokeWidth : 3
                         }
                     }
                 }

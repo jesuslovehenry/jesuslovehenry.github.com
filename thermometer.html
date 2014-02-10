@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
-<script type="text/javascript" src="../lib/d3.v3.js"></script>
-<script type="text/javascript" src="d3charts.src.js"></script>
+<script type="text/javascript" src="javascripts/d3.v3.js"></script>
+<script type="text/javascript" src="javascripts/d3charts.src.js"></script>
 <script>
 function draw() {
     var opts = {
@@ -15,7 +15,7 @@ function draw() {
             colorPalette : [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd,
                 0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf],
             title : {
-                enabled : false
+                enabled : false	
             },
             legend : {
                 enabled : false
@@ -37,29 +37,33 @@ function draw() {
                         fillOpacity : 1,
 						ballSize : '50%',
 						tubeSize : '30%',
+						margin:{
+							right:20
+						},
                         data : [{
                                 value : 22,
-                                fill : 'red',
+                                fill : 'rgb(255, 128, 0)',
                                 fillOpacity : 1
                             }
                         ],
+						
                         ranges : [{
                                 enabled : true,
-                                x1 : 0,
-                                x2 : 10,
-                                fill : 'rgb(0, 255, 255)',
-                                fillOpacity : 1
-                            }, {
-                                enabled : true,
-                                x1 : 10,
+                                x1 : 15,
                                 x2 : 25,
-                                fill : 'rgb(0, 255, 128)',
+                                fill : 'green',
                                 fillOpacity : 1
                             }, {
                                 enabled : true,
                                 x1 : 25,
-								x2 : 40,
-                                fill : 'rgb(0, 128, 255)',
+                                x2 : 35,
+                                fill : 'yellow',
+                                fillOpacity : 1
+                            }, {
+                                enabled : true,
+                                x1 : 35,
+								x2 : 45,
+                                fill : 'red',
                                 fillOpacity : 1
                             }
                         ]
@@ -101,7 +105,7 @@ function draw() {
                         scale : {
                             //          stepNumber:0,
                             //          stepInterval:0,
-                                      min:0,
+                                      min:-10,
                                       max:45
                             //          autoExpand:false,// TRUE indicate to ignore min/max when actual
                             // value exceeds min/max
@@ -141,6 +145,12 @@ function draw() {
     var chart = new d3charts.Chart(context, opts).fRender(svg);
 	
     var series = chart.fSeries('thermometer');
+	svg.selectAll('.tick.major').selectAll('line').each(function(d) {
+		if (d == 0) d3.select(this).style({'stroke':'red', 'stroke-width':2});
+	});
+	svg.selectAll('.tick.major').selectAll('text').each(function(d) {
+		if (d <= 0) d3.select(this).style({'fill':'red'});
+	});
 	//series[0].options.data[0].value = 100;
 	//series[0].options.targets[0].value = 80;
 	//series[0].fRedraw();

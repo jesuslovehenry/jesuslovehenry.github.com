@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <html>
-<script type="text/javascript" src="../lib/d3.v3.js"></script>
-<script type="text/javascript" src="d3charts.src.js"></script>
+<script type="text/javascript" src="javascripts/d3.v3.js"></script>
+<script type="text/javascript" src="javascripts/d3charts.src.js"></script>
 <script>
 function draw() {
     var opts = {
@@ -173,7 +173,7 @@ function draw() {
                             x2: 30,
                             //y1: 0,
                             //y2: 0,
-                            fill : '#00FF00',
+                            fill : 'green',
                             fillOpacity : 1,
                             border : {},
                             labelPosition : 'below', // above, below
@@ -210,7 +210,7 @@ function draw() {
                             x2: 60,
                             //y1: 0,
                             //y2: 0,
-                            fill : '#00FF77',
+                            fill : function(){return d3.hsl('green').brighter();},
                             fillOpacity : 1,
                             border : {},
                             labelPosition : 'below', // above, below
@@ -240,7 +240,7 @@ function draw() {
                             //x2: 60,
                             //y1: 0,
                             //y2: 0,
-                            fill : '#77FF77',
+                            fill : function(){return d3.hsl('green').brighter(1.5);},
                             fillOpacity : 1,
                             border : {},
                             labelPosition : 'below', // above, below
@@ -252,9 +252,25 @@ function draw() {
                             marker : { // Only enabled for line band.
                                 enabled : true,
                                 type : 'diamond',
-                                size : 20,
-                                border : {},
-                                fill : '#FFFF00',
+                                size : 15,
+                                border : {
+									stroke:1
+								},
+                                fill : {
+                                        type : 'radialGradient',
+                                        parameters : ['50%', '50%', '70%', '50%', '50%'],
+                                        stops : [{
+                                                offset : '0%',
+                                                stopColor : 'white',
+                                                stopOpacity : 1
+                                            }, {
+                                                offset : '100%',
+                                                stopColor : 'rgb(128, 64, 0)',
+                                                stopOpacity : 1
+                                            }
+                                        ]
+
+                                    },
                                 fillOpacity : 1
                             }
                         }
@@ -264,17 +280,217 @@ function draw() {
         }
     };
 
-	var svg = d3.select('body').append('div').attr({
+	var opts1 = {
+        chart : {
+            // width:,
+            // height:,
+            fill : 'yellow',
+            fillOpacity : 1,
+
+            colorPalette : [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd,
+                0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf],
+            title : {
+                enabled : false
+            },
+            legend : {
+                enabled : false
+            },
+            plot : {
+                layout : {
+                    type : 'mixed', // It contains two types, mixed/grid, default is mixed.
+                    rows : 0, // row number for grid layout, the height of each row will get same size to fit total height of plot.
+                    columns : 0 // column number for grid layout, the width of each column will get same size to fit total width of plot.
+                },
+                // fill:'',
+                fillOpacity : 0,
+                border : {},
+                series : [{
+                        type : 'linear',
+                        round : 20,
+                        axisIndex : 0,
+                        fill : {
+                            type : 'linearGradient',
+                            parameters : 'T,B',
+                            stops : [{
+                                    offset : '0%',
+                                    stopColor : 'blue',
+                                    stopOpacity : 1
+                                },
+								{
+                                    offset : '30%',
+                                    stopColor : 'white',
+                                    stopOpacity : 1
+                                }
+								, {
+                                    offset : '100%',
+                                    stopColor : 'blue',
+                                    stopOpacity : 1
+                                }
+                            ]
+                        },
+                        fillOpacity : 1,
+                        border : {
+                            enabled : true,
+                            stroke : 'red',
+                            strokeOpacity : 1,
+                            strokeWidth : 2,
+                        },
+                        data : [{
+                                value : 150,
+                                markerPosition : 'below', // below or above
+                                marker : {
+                                    enabled : true,
+                                    type : 'circle',
+                                    size : 20,
+                                    fill : {
+                                        type : 'radialGradient',
+                                        parameters : ['50%', '50%', '70%', '50%', '50%'],
+                                        stops : [{
+                                                offset : '0%',
+                                                stopColor : 'white',
+                                                stopOpacity : 1
+                                            }, {
+                                                offset : '100%',
+                                                stopColor : 'red',
+                                                stopOpacity : 1
+                                            }
+                                        ]
+                                    },
+                                    border : {},
+                                },
+                                labelPosition : 'above',
+                                label : {
+                                    enabled : true,
+                                    text : '',
+                                    font : {
+                                        fill : 'red',
+                                        fillOpacity : 1,
+                                        textAnchor : 'middle', // start/middle/end
+                                    },
+                                    fill : 'pink',
+                                    fillOpacity : 0
+                                }
+                            }, {
+                                value : 50,
+                                markerPosition : 'below', // below or above
+                                marker : {
+                                    enabled : true,
+                                    type : 'triangle-down',
+                                    size : 15,
+                                    fill : 'yellow',
+                                    border : {
+										stroke : 'black',
+                                        strokeWidth : 1
+									},
+                                },
+                                labelPosition : 'above',
+                                label : {
+                                    enabled : true,
+                                    text : '',
+                                    font : {
+                                        fill : 'yellow',
+                                        fillOpacity : 1,
+                                        textAnchor : 'middle', // start/middle/end
+                                    },
+                                    fill : 'pink',
+                                    fillOpacity : 0
+                                }
+                            }
+                        ]
+
+                    }
+                ]
+            },
+            yAxis : [{
+                    enabled : true,
+                    orient : 'bottom',
+                    xOffset : 0, // The x offset relative to origin x of axis container, default is 0
+                    yOffset : 0, // The y offset relative to origin y of axis container, default is 0
+                    fill : 'pink', // Default is undefined.
+                    fillOpacity : 0.5,
+                    title : { // Inherit from label options and add following additional options.
+                        position : '', // left/middle/right/top/bottom
+
+                    },
+                    label : {
+                        enabled : true,
+                        fill : 'black',
+                        fillOpacity : 1,
+                        font : {},
+                        //        anchor: 'middle', // start/middle/end
+                        //rotation : 45,
+                        rotationAnchor : 'middle',
+                        position : 'opposite', // 'same' or 'opposite', 'same' means label is at same side with major ticks, 'opposite' means different side with major ticks.
+                        format : null
+                    },
+                    axisLine : {
+                        enabled : true,
+                        stroke : 'red',
+                        strokeOpacity : 1,
+                        strokeWidth : 1 // stroke-width
+                    },
+                    tick : {
+                        enabled : true,
+                        padding : 3,
+                        scale : {
+                            //          stepNumber:0,
+                            //          stepInterval:0,
+                            //          min:,
+                            //          max:,
+                            //          autoExpand:false,// TRUE indicate to ignore min/max when actual
+                            // value exceeds min/max
+                        },
+                        outerTickSize : 6,
+                        showStartTickLabel : true,
+                        showEndTickLabel : true,
+                        major : {
+                            enabled : true,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'above', // cross/above/below
+                            size : 10,
+                            lineStepNumber : 1
+                        },
+                        minor : {
+                            enabled : true,
+                            count : 3,
+                            stroke : 'black',
+                            strokeOpacity : 1,
+                            strokeWidth : 1,
+                            style : 'above', // cross/above/below
+                            size : 6
+                        }
+                    }
+                }
+            ]
+        }
+    }
+	
+	var container = d3.select('body').append('div').attr({
             width : '800px',
             height : '150px'
     });
     var context = new d3charts.ChartContext();
-    var ll = new d3charts.Chart(context, opts).fRender(svg);
+    var chart = new d3charts.Chart(context, opts).fRender(container);
 
-	var series = ll.fSeries('linear');
+	var series = chart.fSeries('linear');
 	setInterval(function() {
 		series[0].fMovePointer(0, Math.random() * 160);
 		series[0].fMovePointer(1, Math.random() * 160);
+	}, 1000);
+	
+	var container1 = d3.select('body').append('div').attr({
+            width : '800px',
+            height : '100px'
+    });
+    var context1 = new d3charts.ChartContext();
+    var chart1 = new d3charts.Chart(context1, opts1).fRender(container1);
+
+	var series1 = chart1.fSeries('linear');
+	setInterval(function() {
+		series1[0].fMovePointer(0, Math.random() * 120 + 40);
+		series1[0].fMovePointer(1, Math.random() * 120 + 40);
 	}, 1000);
 	
 }
