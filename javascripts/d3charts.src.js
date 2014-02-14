@@ -1141,8 +1141,8 @@ function d3c_adaptFill(fillValue, chartContext) {
  * @param chartContext
  * @returns
  */
-function d3c_adaptDashstyle(name, value, width, chartContext) {
-    var i;
+function d3c_adaptDashstyle(name, v, width, chartContext) {
+    var i, value = v;
     if (typeof value === 'function') {
         return (function (_this) {
             var args = chartContext ? d3.merge(arguments, [chartContext])
@@ -1157,15 +1157,15 @@ function d3c_adaptDashstyle(name, value, width, chartContext) {
         if (value === 'solid') {
             value = 'none';
         } else if (value) {
-            value = value.replace('shortdashdotdot', '3,1,1,1,1,1,').replace(
-                    'shortdashdot', '3,1,1,1').replace('shortdot', '1,1,')
-                    .replace('shortdash', '3,1,').replace('longdash', '8,3,')
-                    .replace(/dot/g, '1,3,').replace('dash', '4,3,').replace(
+            value = value.replace(/(shortdashdotdot)/g, '3,1,1,1,1,1,').replace(
+                    /(shortdashdot)/g, '3,1,1,1').replace(/(shortdot)/g, '1,1,')
+                    .replace(/(shortdash)/g, '3,1,').replace(/(longdash)/g, '8,3,')
+                    .replace(/(dot)/g, '1,3,').replace(/(dash)/g, '4,3,').replace(
                             /,$/, '').split(','); // ending comma
 
             i = value.length;
             while (i--) {
-                value[i] = pInt(value[i]) * width;
+                value[i] = parseInt(value[i]) * width;
             }
             value = value.join(',');
         }
@@ -1196,9 +1196,6 @@ function d3c_getBorderWidth(borderStyle) {
  */
 function d3c_adaptBorderStyle(borderStyle, chartContext) {
     if (typeof borderStyle === 'object') {
-        // Adjust property name
-        borderStyle = d3c_toCssStyle(borderStyle);
-        
         // Adjust property value
         for (var k in borderStyle) {
             if (borderStyle.hasOwnProperty(k)) {
@@ -1212,6 +1209,9 @@ function d3c_adaptBorderStyle(borderStyle, chartContext) {
                 } 
             }
         }
+        
+        // Adjust property name
+        borderStyle = d3c_toCssStyle(borderStyle);
     }
     
     return borderStyle;
@@ -1425,6 +1425,9 @@ function _values(data, prop, valArray) {
         hasValues = (valArray !== undefined),
         result = [],
         i = 0;
+    if (!prop) {
+        return data;
+    }
     if (type === 'number' || type === 'string' || type === 'boolean') {
         // data is single dimension array with primtive value.
         if (hasValues) {
@@ -1441,7 +1444,7 @@ function _values(data, prop, valArray) {
             if (hasValues) {
                 _values(data[i], prop, valArray[i]);
             } else {
-                result.concat(_values(data[i], prop) || []);
+                result = result.concat([_values(data[i], prop)] || []);
             }
         }
     } else if (type === 'object') {
@@ -1449,7 +1452,7 @@ function _values(data, prop, valArray) {
             if (hasValues) {
                 data[i][prop] = valArray[i];
             } else {
-                result.concat(data[i][prop] || []);
+                result = result.concat([data[i][prop]]|| []);
             }
         }
     }
@@ -1968,10 +1971,10 @@ var Label = d3c_extendClass(null, Element, {
         yOffset = opts.yOffset || 0,
         bbox = null,
         borderUpdate = null,
-        textUpdate = null;
+        textUpdate = null,
+        d3Sel = this.d3Sel = g || this.eContainer.d3Sel.append('g').attr('class', CN.label);
         
-        this.d3Sel = g;
-        g.each(function (d, i) {
+        d3Sel.each(function (d, i) {
             var 
             g = d3.select(this),
             text = opts.text || d;
@@ -2047,7 +2050,7 @@ var LedLabel = d3c_extendClass(null, Element, {
         digits : [0],
         _scale : null,
         _dispUpdate : null,
-        _fRender : function () {
+        _fRender : function (g) {
             var
             i = 0,
             opts = this.options,
@@ -2055,7 +2058,11 @@ var LedLabel = d3c_extendClass(null, Element, {
             digitCount = opts.digitCount,
             gap = opts.gap,
             _scale = this._scale,
-            d3Sel = (this.d3Sel = this.d3Sel || this.eContainer.d3Sel.append('g').attr('class', CN.ledLabel));
+            d3Sel = (this.d3Sel = this.d3Sel || g || this.eContainer.d3Sel.append('g'));
+            
+            if(!d3Sel.attr('class')) {
+                d3Sel.attr('class', CN.ledLabel)
+            }
             
             this.digits = new Array(digitCount);
             for (i = 0; i < digitCount; i++) {
@@ -2281,6 +2288,8 @@ d3c_extendClass(Chart, Element, {
     },
     _fRender : function (selection) {
         var 
+        _this = this,
+        context = this.chartContext,
         p = this._p,
         chart = this,
         opts =  this.chartContext.jointOpts = chart.jointOpts = d3c_mergeChartOptions(d3c_mergeChartOptions(d3c_clone(DefaultOptions), this.themeOpts), this.options),
@@ -2414,8 +2423,55 @@ d3c_extendClass(Chart, Element, {
             
         // 4 Add chart area
         // 4.1 parse all series to classify series type, some series need axis, some not.
-        // 4.1 Add y axis
-        // 4.2 Add x axis
+        
+//        // 4.1 Add y axis        
+//        var
+//        seriesMap = d3c_getAxisSeries(opts.plot.series);
+//        minMaxY = d3c_calculateScaleDomain(opts.yAxis[0], null, d3c_getSeriesMinMax(seriesMap, 0)),
+//        yAxis0Scale = d3.scale.linear();
+//        yAxis0Scale.domain(minMaxY);
+//        yAxis0Scale.range([remainBounds.height, 0]);
+//        if (opts.yAxis[0] || opts.yAxis[0].enabled !== false) {
+//            eYAxis[0] = new Axis(_this, context, opts.yAxis[0]);
+//            eYAxis[0].fScale(yAxis0Scale);
+//            var
+//            yaxis = chart.d3Sel.selectAll(CN.FN.yAxis + CN.FN.axis).data([opts.yAxis[0]]),
+//            yaxisUpdate = (yaxis.enter().append('g').attr('class', CN.yAxis + ' ' + CN.axis), yaxis),
+//            axisHeight = remainBounds.height;
+//            axisUpdate.call(d3c_translate, remainBounds.x, remainBounds.y);
+//            eYAxis[0].fRender(yaxisUpdate);
+//        }
+//        
+//        // 4.2 Add x axis
+//        var
+//        yaxisBBox = yaxisUpdate.bbox(true),
+//        xaxisDomain = [],
+//        xRange = [0, remainBounds.width - yaxisBBox.width],
+//        xaxisScale = d3.scale.ordinal();
+//        xaxisScale.range(xRange);
+//        if (opts.categoryType === 'datetime') {
+//            xaxisDomain = [new Date().setTime(opts.category[0]), new Date().setTime(opts.category[opts.category.length - 1])];
+//            xaxisScale.domain(xaxisDomain);
+//        } else  {
+//            xaxisDomain = [opts.category[0], opts.category[opts.category.length - 1]];
+//            xaxisScale.domain(xaxisDomain);
+//        }
+//        
+//        if (opts.xAxis || opts.xAxis.enabled !== false) {
+//            eXAxis[0] = new Axis(_this, context, opts.xAxis);
+//            eXAxis[0].fScale(xaxisScale);
+//            var
+//            xaxis = chart.d3Sel.selectAll(CN.FN.xAxis + CN.FN.axis).data([opts.xAxis]),
+//            xaxisUpdate = (xaxis.enter().append('g').attr('class', CN.xAxis + ' ' + CN.axis), xaxis);
+//            xaxisUpdate.call(d3c_translate, remainBounds.x + yaxisBBox.width, remainBounds.y + remainBounds.height);
+//            eXAxis.fRender(xaxisUpdate);
+//        }
+//        
+//        // Adjust position of y axis and x axis
+        
+        
+        
+        
         // 4.3 Add plot & series
         
         d3c_merge(chartOpts.plot, remainBounds); // set plot bounds.
@@ -2529,7 +2585,41 @@ d3c_extendClass(Chart, Element, {
     }
 });
 
+function d3c_getSeriesMinMax(seriesMap, yAxisKey, valueKey) {
+    var arr = [];
+    for (var s in seriesMap.get(yAxisKey)) {
+        arr = d3.merge([arr, d3c_seriesValues(s.data, valueKey)]);
+    }
+    arr = [d3.min(arr), d3.max(arr)];
+    
+}
 
+function d3c_getAxisSeries(seriesOpts) {
+    var
+    series = null,
+    sMap = d3.map();
+    for (var s in seriesOpts) {
+        series = seriesOpts[s];
+        if (d3c_isAxisSeries(series.type)) {
+            sMap.set(series.axisIndex || 0, series);
+        } else {
+            sMap.set('noaixs', series);
+        }
+    }
+}
+
+function d3c_isAxisSeries(seriesType) {
+    switch(seriesType) {
+    case 'bar':
+    case 'line':
+    case 'area':
+    case 'scatter':
+    case 'bubble':
+    case 'gantt':
+        return true;
+    }
+    return false;
+}
    /**
  * Title class
  */
@@ -2992,7 +3082,7 @@ var Plot = d3c_extendClass(null, Element, {
         
         this.d3Sel = this.d3Sel || this.eContainer.d3Sel.append('g').datum(opts).attr({'x': x, 'y': y, 'class': this.fClassNames()});
         d3c_translate(this.d3Sel, x, y);
-        border = this.d3Sel.append('rect').attr({'x': 0, 'y': 0, 'wdith': w, 'height': h}).datum(opts.border);
+        border = this.d3Sel.append('rect').attr('class', CN.border).attr({'x': 0, 'y': 0, 'width': w, 'height': h}).datum(opts.border);
         d3c_applyBorderStyle(border, opts.border, opts, chartContext);
         
         i = opts.series.length;
@@ -3004,8 +3094,10 @@ var Plot = d3c_extendClass(null, Element, {
             serieOpts.height = h;
             
             // Adjust series fill with color palette setting.
-            var len = this.chartContext.options.chart.colorPalette.length;
-            serieOpts.fill = serieOpts.fill || this.chartContext.options.chart.colorPalette[i % len];
+            if (this.chartContext.options.chart.colorPalette) {
+                var len = this.chartContext.options.chart.colorPalette.length;
+                serieOpts.fill = serieOpts.fill || this.chartContext.options.chart.colorPalette[i % len];
+            }
             
             this.eSeries.push(series =  d3c_createSeries.call(this, this, this.chartContext, serieOpts));
             series.fRender();
@@ -3147,6 +3239,7 @@ var DialSeries = d3c_extendClass(null, Element, {
     arcFactor: 0.5,
     _fRender: function () {
         var 
+        _this = this,
         chartContext = this.chartContext,
         opts = this.options,
         indicatorOpts = opts.indicator,
@@ -3270,7 +3363,7 @@ var DialSeries = d3c_extendClass(null, Element, {
             // render pivot
             if (ip && ip.enabled) {
                 ip.size = d3c_adaptNumberOpt(ip.size, radius);
-                paths = d3c_symbol().type(ip.type).size(ip.size * ip.size);
+                paths = (typeof ip.type === 'function') ? ip.type.call(_this, ip) : d3c_symbol().type(ip.type).size(ip.size * ip.size);
                 pivotNode = pointerUpdate.append('path').datum(ip).attr('class', 'pivot').attr('d', paths());
                 d3c_applyBorderStyle(pivotNode, ip.border, ip, chartContext, borderFunctor);
             }
@@ -3278,7 +3371,7 @@ var DialSeries = d3c_extendClass(null, Element, {
             // render head
             if (ih && ih.enabled) {
                 ih.size = d3c_adaptNumberOpt(ih.size, radius);
-                paths = d3c_symbol().type(ih.type).size(ih.size * ih.size);
+                paths = (typeof ih.type === 'function') ? ih.type.call(_this, ih) : d3c_symbol().type(ih.type).size(ih.size * ih.size);
                 headNode = pointerUpdate.append('path').datum(ih).attr('class', 'head').attr('d', paths());
                 d3c_translate(headNode, 0, -ib.headRadius);
                 d3c_applyBorderStyle(headNode, ih.border, ih, chartContext, borderFunctor);
@@ -3287,7 +3380,7 @@ var DialSeries = d3c_extendClass(null, Element, {
             // render tail
             if (it && it.enabled) {
                 it.size = d3c_adaptNumberOpt(it.size, radius);
-                paths = d3c_symbol().type(it.type).size(it.size * ih.size);
+                paths = (typeof it.type === 'function') ? it.type.call(_this, it) : d3c_symbol().type(it.type).size(it.size * ih.size);
                 tailNode = pointerUpdate.append('path').datum(it).attr('class', 'tail').attr('d', paths());
                 d3c_translate(tailNode, 0, ib.tailRadius);
                 d3c_applyBorderStyle(tailNode, it.border, it, chartContext, borderFunctor);
@@ -3709,6 +3802,13 @@ var DefaultLinearSeriesOptions = {
 //            fillOpacity: 1e-6,
 //            border: {},
 //        }
+//    ,
+//    line : {
+//        enabled: false,
+//        stroke: 'yellow',
+//        strokeWidth:1,
+//        strokeOpacity:1
+//    }
 //    }
 //    ,
 //    ranges : { // Array
@@ -3839,19 +3939,28 @@ var LinearSeries = d3c_extendClass(null, Element, {
         // Render data pointers
         p.sPointers = d3Sel.selectAll(CN.FN.pointer).data(dataOpts);
         p.sPointersUpdate = (p.sPointers.enter().append('g').attr('class', CN.pointer), d3.transition(p.sPointers));
-        p.sPointersUpdate.each(function (_data, i) {
+        p.sPointersUpdate.each(function (pointerOpts, i) {
             var
-            pointer = d3.select(this).call(d3c_createMarker, _data.marker, h, context),
-            x = scale(_data.value),
-            y = (_data.markerPosition === 'below') ? gadgetBounds.y + gadgetBounds.height : gadgetBounds.y,
+            pointer = d3.select(this).call(d3c_createMarker, pointerOpts.marker, h, context),
+            x = scale(pointerOpts.value),
+            y = (pointerOpts.markerPosition === 'below') ? gadgetBounds.y + gadgetBounds.height : gadgetBounds.y,
             label;
             
             d3c_translate(pointer, x, y);
-            if (_data.label && _data.label.enabled !== false) {
-                label = d3c_createLabel(pointer, _data.label, _data.value, context);
-                d3c_translate(label, 0, (_data.labelPosition === 'below') ? _data.marker.size / 2 : - (label.bbox().height + _data.marker.size / 2));
+            if (pointerOpts.label && pointerOpts.label.enabled !== false) {
+                label = d3c_createLabel(pointer, pointerOpts.label, pointerOpts.value, context);
+                d3c_translate(label, 0, (pointerOpts.labelPosition === 'below') ? pointerOpts.marker.size / 2 : - (label.bbox().height + pointerOpts.marker.size / 2));
 //                label.select('text').attr('dy', (data.position === 'below') ? '.3em' : '.7em');
             };
+            
+            // Create line
+            if (pointerOpts.line && pointerOpts.line.enabled !== false) {
+                var line = pointer.selectAll('line').data([pointerOpts.line]);
+                line.enter().insert('line', CN.FN.marker).attr({'x1': 0, 'y1': 0, 'x2': 0, 'y2': (pointerOpts.markerPosition === 'below') ? -gadgetBounds.height : gadgetBounds.height});
+                d3c_applyBorderStyle(line, pointerOpts.line, {}, context);
+            } else {
+                pointer.selectAll('line').remove();
+            }
         });
         
         // 2. Compute bounds of plot bar.
@@ -3874,8 +3983,9 @@ var LinearSeries = d3c_extendClass(null, Element, {
         d3c_translate(axisUpdate, eAxis.fOptions().x, eAxis.fOptions().y);
         
         // adjust pointers.
-        p.sPointersUpdate.each(function (_data, i) {
-            d3c_translate(d3.select(this), scale(_data.value), (_data.markerPosition === 'below') ? gadgetBounds.y + gadgetBounds.height : gadgetBounds.y);
+        p.sPointersUpdate.each(function (pointerOpts, i) {
+            d3c_translate(d3.select(this), scale(pointerOpts.value), (pointerOpts.markerPosition === 'below') ? gadgetBounds.y + gadgetBounds.height : gadgetBounds.y);
+            d3.select(this).select('line').attr({'x1': 0, 'y1': 0, 'x2': 0, 'y2': (pointerOpts.markerPosition === 'below') ? -gadgetBounds.height : gadgetBounds.height});
         });
         
         // adjust bands.
@@ -3970,6 +4080,13 @@ var DefaultBulletSeriesOptions = {
 ////        border : {}
 //        labelPosition: 'outside', // Indicate the value label shows in measure bar or inside or outside
 //        label: {} 
+//    ,
+//    line : {
+//        enabled: false,
+//        stroke: 'yellow',
+//        strokeWidth:1,
+//        strokeOpacity:1
+//    }
 //    }], // Array
 //    targets : [{ // properties are same with data
 //        value: 0,
@@ -4058,7 +4175,7 @@ var BulletSeries = d3c_extendClass(null, Element, {
             bounds.y = margin.top;
             bounds.width -= (margin.left + margin.right);
             bounds.height -= (margin.top + margin.bottom);
-
+            
             var
             titles = g.selectAll(CN.FN.title).remove().data([titleOpts, subtitleOpts]),
             titleUpdate = (titles.enter().append('g').attr('class', CN.title), titles.transition()),
@@ -4140,6 +4257,7 @@ var BulletSeries = d3c_extendClass(null, Element, {
                 measuresUpdate.sort(function c(a, b){
                     return b.value < a.value ? -1 : b.value > a.value ? 1 : 0;
                 });
+                p.measures = measuresUpdate;
                 measuresUpdate.each(function(opts, i) {
                     var
                     g = d3.select(this),
@@ -4179,6 +4297,7 @@ var BulletSeries = d3c_extendClass(null, Element, {
                 targetsUpdate.sort(function c(a, b){
                     return a.value < b.value ? -1 : a.value > b.value ? 1 : 0;
                 });
+                p.targets = targetsUpdate;
                 targetsUpdate.each(function(opts, i) {
                     var
                     g = d3.select(this),
@@ -4251,6 +4370,48 @@ var BulletSeries = d3c_extendClass(null, Element, {
     },
     fRedraw: function () {
         this.fRender(this.d3Sel);
+    },
+    fTarget : function(i) {
+        if (arguments.length && d3c_isNumber(arguments[0])) {
+            return this._p.targets && d3.select(this._p.targets[0][arguments[0]]);
+        }
+        return this._p.targets;  
+    },
+    fMoveTarget: function(i, value) {
+        var
+        targetUpdate =this.fTarget(i);
+        
+        if(targetUpdate) {
+            var
+            rect = targetUpdate.select('rect');
+            x = parseInt(rect.attr('x')),
+            newX = this.scale(value);
+        
+            if (x != newX) {
+                rect.transition().duration(1000).attr('x', newX);
+            }
+        }
+    },
+    fMeasure: function(i) {
+        if (arguments.length && d3c_isNumber(arguments[0])) {
+            return this._p.measures && d3.select(this._p.measures[0][arguments[0]]);
+        }
+        return this._p.measures;
+    },
+    fChangeMeasure: function(i, value) {
+        var
+        measureUpdate =this.fMeasure(i);
+        
+        if(measureUpdate) {
+            var
+            rect = measureUpdate.select('rect');
+            w = parseInt(rect.attr('width')),
+            newW = this.scale(value);
+        
+            if (w != newW) {
+                rect.transition().duration(1000).attr('width', newW);
+            }
+        }
     }
 });/**
  * 
@@ -4530,6 +4691,227 @@ function d3c_thermometer_fillGradient(type, fill) {
 }
 
 /**
+ * New node file
+ */
+//var SimpleBarOpts = {
+//    title:'',
+//    subtitle:'',    
+//      font:{},
+//      subtitleFont:{},
+//    fill:,
+//    fillOpacity:,
+//    border:{},
+//    data:[{
+//        x:'',
+//        y:''
+//    }],
+//        categoryType: ''
+//        categoryLabelFont:{},
+//      seriesLabelFont:{},
+//      xDataFormat:'',
+//      yDataFormat:'',
+//}
+var SimpleBar = function(_chartContext) {
+    var
+    chartContext = _chartContext,
+    h = null,
+    w = null;
+   
+    function bar(g) {
+        g.each(function(d, i){
+            var
+            g = d3.select(this),
+            opts = d,
+            data = opts.data,
+            width = w || opts.width,
+            height = h || opts.height,
+            title = opts.title,
+            xValue = d3c_seriesValues(data, 'x'),
+            yValues = d3c_seriesValues(data, 'y'),
+            minMaxY = [d3.min(yValues), d3.max(yValues)],
+            y = d3.scale.linear().range([height, 0]);
+            y.domain([0, minMaxY[1]]),
+            barWidth = width / data.length,
+            b = {'x': 0, 'y': 0, 'width': width, 'height': height};
+            if (title) {
+                var titleUpdate = g.selectAll(CN.FN.title).data([title]);
+                titleUpdate.enter().append('text')
+                    .attr('class', CN.title)
+                    .attr('dy', '.8em')
+                    .attr({'x': 0, 'y': 0})
+                    .text(title),
+                titleBBox = (d3c_applyFontStyle(titleUpdate, opts.font, chartContext), titleUpdate.bbox(true));
+            }
+            
+            var
+            subtitle = g.selectAll('.subtitle').data([minMaxY[0]]),
+            subtitleLabel = opts.subtitle || (opts.yDataFormat ? opts.yDataFormat(minMaxY[0]) : minMaxY[0]) + ' - ' + (opts.yDataFormat ? opts.yDataFormat(minMaxY[1]) : minMaxY[1]),
+            subtitleUpdate = subtitle.enter().append('text')
+                .attr('class', '.subtitle')
+                .attr('dy', '.8em')
+                .attr({'x': 0, 'y': (titleBBox || {'height': height}).height})
+                .text(subtitleLabel),
+            subtitleBBox = (d3c_applyFontStyle(subtitleUpdate, opts.subtitleFont, chartContext), subtitleUpdate.bbox(true)),
+            totalBBox = g.selectAll('.title, .subtitle').bbox(true);
+            
+            b.x = totalBBox.width;
+            b.width -= totalBBox.width; 
+            
+            var
+            barsGroup = g.selectAll('.barGroup').data([data]);
+            barsGroup.enter().append('g').attr('class', 'barGroup');
+            d3c_translate(barsGroup, b.x, b.y);
+            barsGroup.exit().remove();
+            barsGroup.each(function(d){
+                var barsGroup = d3.select(this);
+                barsUpdate = barsGroup.selectAll('.bar').data(d);
+                barsUpdate.enter().append('g').attr('class', 'bar');
+                barsUpdate.exit().remove;
+                barsUpdate.each(function(d, i) {
+                    var
+                    g = d3.select(this).attr('transform', 'translate(' + (i * barWidth) + ',0)'),
+                    dpUpdate = g.selectAll('.dataPoint').data([d]),
+                    slUpdate = g.selectAll('.seriesLabel').data([d]);
+                    clUpdate = g.selectAll('.categoryLabel').data([d]);
+                    
+                    dpUpdate.enter().append('rect').attr('class', 'dataPoint');
+                    dpUpdate.exit().remove();
+                    slUpdate.enter().append('text').attr('class', 'seriesLabel');
+                    slUpdate.exit().remove();
+                    clUpdate.enter().append('text').attr('class', 'categoryLabel');
+                    clUpdate.exit().remove();
+                    
+                    clUpdate
+                    .style('text-anchor', 'middle')
+                    .attr("x", barWidth / 2)
+                    .attr("y", height)
+                    .attr("dy", "-.2em")
+                    .text(adaptCategoryData(opts, d.x))
+                    .call(d3c_applyFontStyle, opts.categoryLabelFont, chartContext);   
+                    
+                    var
+                    clBBox = clUpdate.node().getBBox(),
+                    newH = height - clBBox.height;
+                    
+                    dpUpdate.attr('y', newH)
+                        .attr('height', 0)
+                        .attr('width', barWidth - 1)
+                        .call(d3c_applyBorderStyle, opts.border, opts, chartContext)
+                        .transition().duration(1000)
+                        .attr('y', y(d.y))
+                        .attr('height', newH - y(d.y))
+                        .style('fill', getFill.call(this, opts.fill, chartContext, d.y) );
+                     slUpdate
+                         .style('text-anchor', 'middle')    
+                         .attr('transform', 'translate(' + (barWidth /2 ) + ',' + Math.min((y(d.y)+ 10), newH - 10) + ') rotate(-90)') 
+                         .attr("x", 0)
+                         .attr("y", 0)
+                         .attr("dy", ".3em")
+                         .text(opts.yDataFormat ? opts.yDataFormat(d.y) : d.y)
+                         .call(d3c_applyFontStyle, opts.seriesLabelFont, chartContext);
+                });
+            });
+            
+            
+        });
+        return this;
+    }
+    
+    bar.width = function() {
+        if (!arguments.length) {
+            return w;
+        } else {
+            w = arguments[0];
+        }
+        return bar;
+    };
+    
+    bar.height = function() {
+        if (!arguments.length) {
+            return h;
+        } else {
+            h = arguments[0];
+        }
+        return bar;
+    };
+    
+    function getFill(fill, context, y) {
+        if (fill) {
+            if (typeof fill === 'string') { 
+                return d3c_adaptFill(fill, context); 
+            } else if(typeof fill === 'function') {
+                return fill.call(this, y, context);
+            } 
+        }
+        return fill;
+    }
+    
+    function adaptCategoryData(opts, value) {
+        var d = value, t;
+        if (opts.categoryType === 'date') {
+            t = new Date();
+            t.setTime(d);
+            d = t;
+        }
+        return opts.xDataFormat ? opts.xDataFormat(d) : d;
+    }
+    
+    return bar;
+}
+
+var SimpleBarCharts = function() {
+    var
+    data,
+    x,
+    y,
+    width,
+    height,
+    chartContext,
+    simpleBar,
+    svg;
+    
+    function sbc(g) {
+        svg = g.selectAll('svg').data([0]);
+        svg.enter().append('svg')
+            .attr('class', 'simpleBarChart')
+            .attr({'x':x, 'y': y, 'width': width, 'height': height});
+        
+        chartContext = chartContext || new ChartContext(svg);
+        var
+        barCharts = svg.selectAll('.barChart').data(data),
+        barHeight = height / data.length;
+        barCharts.enter().append('g').attr('class', 'barChart');
+        simpleBar = simpleBar || new SimpleBar(chartContext);
+        simpleBar.width(width).height(barHeight);
+        simpleBar(barCharts);
+        barCharts.each(function(d, i){
+            d3c_translate(d3.select(this), x, barHeight * i);
+        });
+    }
+    
+    sbc.data = function() {
+        if (!arguments.length) {
+            return data;
+        } else {
+            data = arguments[0];
+        }
+        return sbc;
+    };
+    
+    sbc.bounds = function() {
+        if (!arguments.length) {
+            return {'x': x, 'y': y, 'width' : width, 'height': height};
+        } else {
+            x = arguments[0].x;
+            y = arguments[0].y;
+            width = arguments[0].width;
+            height = arguments[0].height;
+        }
+        return sbc;
+    };
+    
+    return sbc;
+}/**
  * 
  */
 d3charts = {
@@ -4553,9 +4935,11 @@ d3charts = {
 	    clone: d3c_clone,
 	    merge: d3c_merge,
 	    translate: d3c_translate
-	}
-	
+	},
+	SimpleBar: SimpleBar,
+	SimpleBarCharts : SimpleBarCharts
 };
+
 window.d3charts = window.d3charts || d3charts;
 
 })();

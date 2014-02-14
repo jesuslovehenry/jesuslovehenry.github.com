@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<script type="text/javascript" src="../lib/d3.v3.js"></script>
+<script type="text/javascript" src="d3charts.src.js"></script>
+<script>
+var
+d = new Date();
+function getData() {
+    var v = [];
+    for (var i = 0; i < 24; i++) {
+        v.push({
+            'x' : (d.setHours(i % 23), d.getTime()),
+            'y' : Math.random() * 100,
+        })
+    }
+	return v;
+}
+function draw() {
+    var opts = {
+        title : 'Simple bar Chart A',
+        font : {},
+        subtitleFont : {},
+        fill : function(y, context) {
+			if (!arguments.length) {
+				return 'green';
+			}
+			return y > 50 ? 'red' : y > 30 ? 'yellow' : 'green';
+		},
+        fillOpacity : 1,
+        border : {
+            stroke : 'blue',
+            strokeWidth : 1
+        },
+		categoryType : 'date',
+		categoryLabelFont:{},
+		seriesLabelFont : {},
+        xDataFormat : d3.time.format('%H'),
+        yDataFormat : function(y) {return d3.round(y, 0);}
+    };
+    var chartOpts = [];
+    for (var i = 0; i < 5; i++) {
+        var o = d3charts.api.clone(opts);
+        o.title = 'Simple Chart' + i;
+        o.data = getData();
+        chartOpts.push(o);
+    }
+
+    var classicBullet = d3.select('body').append('div').attr({
+            width : '400px',
+            height : '800px'
+        });
+    var simpleBarCharts = new d3charts.SimpleBarCharts();
+    simpleBarCharts.bounds({
+        'x' : 0,
+        'y' : 0,
+        'width' : 400,
+        'height' : 800
+    }).data(chartOpts);
+    simpleBarCharts(classicBullet);
+}
+
+</script>
+<body onload="draw();">
+</body>
+</html>
+

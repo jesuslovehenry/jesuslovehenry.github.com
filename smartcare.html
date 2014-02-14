@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+<script type="text/javascript" src="javascript/jquery.min.js"></script>
+<script type="text/javascript" src="javascript/d3.v3.min.js"></script>
+<script type="text/javascript" src="javascript/hammer.min.js"></script>
+<script type="text/javascript" src="javascript/d3charts.src.js"></script>
+<script type="text/javascript" src="javascript/smartcare.js"></script>
+<style>
+.watchItemLabel {
+	font-size: 20px;
+}
+</style>
+</head>
+
+<body onload="draw();">
+<script>
+var
+timer = null,
+dsGadget,
+drGadget;
+
+function getWinSize() {
+        return {'width': $(window).width(), 'height': $(window).height() - 100};
+        //return {'width' : 400, 'height' : 800};
+}
+
+function drawDaySummary() {
+	var
+	size = getWinSize(),
+	bounds = {'x':0, 'y':0, 'width': size.width, 'height':size.height},
+	ds = DaySummary(),
+	dsUpdate = d3.select('#day_summary');
+	dsUpdate.attr('width', size.width + 'px')
+	.attr('height', size.height + 'px')
+	.style('display', 'visible');
+	$('#day_summary').show();
+	ds(dsUpdate, bounds);
+	
+	Hammer(dsUpdate.node()).on('swipeleft', 
+		function(event) {
+			dsUpdate.style('display', 'none');
+			$('#day_summary').hide();
+			d3.select('#day_runtime').style('display', 'visible');
+			$('#day_runtime').show();
+			if (!drGadget) {
+				drGadget = drawDayRuntime();
+			}
+			startInterval(drGadget);
+		}
+	);
+	return ds;
+}
+
+function drawDayRuntime() {
+	var
+	size = getWinSize(),
+	bounds = {'x':0, 'y':0, 'widht': size.width, 'height':size.height},
+	sc = smartcare(),
+	drUpdate = d3.select('#day_runtime');
+	drUpdate.attr('width', size.width + 'px')
+	.attr('height', size.height + 'px')
+	.style('display', 'visible');
+	$('#day_runtime').show();
+	sc(drUpdate);
+
+	Hammer(drUpdate.node()).on('swiperight', 
+		function(event) {
+			drUpdate.style('display', 'none');
+			$('#day_runtime').hide();
+			d3.select('#day_summary').style('display', 'visible');
+			$('#day_summary').show();
+			stopInterval(drGadget);
+		}
+	);
+
+	return sc;
+}
+
+function startInterval(sc) {
+	timer = setInterval(function () {
+		var v = function(){return Math.floor(Math.random() * 10);};
+		var data = {'pulse': v() * 6, 'temperature': v() * 1.5 + 30, 'bloodSugar': v() * 2, 'bloodOxygen': v() * 1.5 + 5, 'bloodPressure': [v() * v(), v() * 5, v() * 9], 'energyInOut': [v() * 20, v() * 20]};
+		sc.onData(data);
+	}, 200);
+}
+
+function stopInterval() {
+	window.clearInterval(timer);
+}
+
+function draw() {
+	dsGadget = drawDaySummary();
+}
+</script>
+</body>
+<div id='day_summary' style="position:absolute;display:none"></div>
+<div id='day_runtime' style="position:absolute;display:none"></div>
+</html>
