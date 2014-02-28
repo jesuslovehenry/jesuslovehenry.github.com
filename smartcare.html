@@ -65,16 +65,7 @@ function drawDayRuntime() {
 	$('#day_runtime').show();
 	sc(drUpdate);
 
-	Hammer(drUpdate.node()).on('swiperight', 
-		function(event) {
-			drUpdate.style('display', 'none');
-			$('#day_runtime').hide();
-			d3.select('#day_summary').style('display', 'visible');
-			$('#day_summary').show();
-			stopInterval(drGadget);
-		}
-	);
-
+	
 	return sc;
 }
 
@@ -91,7 +82,8 @@ function stopInterval() {
 }
 
 function draw() {
-	dsGadget = drawDayRuntime();
+	drGadget = drawDayRuntime();
+	startInterval(drGadget);
 }
 </script>
 </body>
